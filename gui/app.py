@@ -12,6 +12,8 @@ class TrafikLevhasiApp:
         self.root.title("Trafik Levhası Tespiti")
         self.root.geometry("1000x700")
 
+        self.root.configure(fg_color="#0f172a")  # Arka plan rengini ayarlayın
+
         #imleç ekliyorum hadi bakalım, başına @ gelmek zorundaymış
         self.root.configure(cursor="@flower.cur")
 
@@ -72,11 +74,11 @@ class TrafikLevhasiApp:
             height = 40,
             hover = False,
             cursor = "@cat.cur",
-            fg_color="#e94560",         # Butonun normal rengi (Canlı kırmızı/pembe)
+            fg_color="#4d8a5a",         # Butonun normal rengi (Canlı kırmızı/pembe)
             text_color="#ffffff",       # Yazı rengi (Beyaz)
             #hover_color="#0f3460",      # Eğer hover'ı tekrar açarsan üzerine gelince olacak renk
-            corner_radius=20,           # Daha yuvarlak, yumuşak köşeler
-            border_width=2,             # Kenarlık kalınlığı
+            corner_radius=10,           # Daha yuvarlak, yumuşak köşeler
+            border_width=3,             # Kenarlık kalınlığı
             border_color="#0f3460"      # Kenarlık rengi
         )
         self.selected_btn.pack(side="left", padx=10)
