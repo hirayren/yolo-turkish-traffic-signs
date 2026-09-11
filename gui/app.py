@@ -12,17 +12,11 @@ class TrafikLevhasiApp:
         self.root.title("Trafik Levhası Tespiti")
         self.root.geometry("1000x700")
 
-        import os
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(base_dir, "model", "yolo26n.pt")
-    
-        print(f"Model yolu: {model_path}")
-        print(f"Model var mı? {os.path.exists(model_path)}")
-        
-        self.model = YOLO(model_path)
-    
-        # Model sınıflarını yazdır (KONTROL İÇİN)
-        print("Model sınıfları:", self.model.names)
+        #imleç ekliyorum hadi bakalım, başına @ gelmek zorundaymış
+        self.root.configure(cursor="@flower.cur")
+
+        #modeli yükle
+        self.model = YOLO("../model/best.pt")
 
         self.image_path = None
 
@@ -48,7 +42,7 @@ class TrafikLevhasiApp:
 
         self.original_label = ctk.CTkLabel(
             left_frame,
-            text = "görsel yüklenmedi",
+            text = "görsel yükleyin",
             font = ctk.CTkFont(size=14)
         )
         self.original_label.pack(pady=10)
@@ -59,7 +53,7 @@ class TrafikLevhasiApp:
 
         self.result_label = ctk.CTkLabel(
             right_frame,
-            text = "sonuç görseli",
+            text = "size ne olduğunu söyleyelim",
             font = ctk.CTkFont(size=14)
         )
         self.result_label.pack(pady=10)
@@ -75,9 +69,18 @@ class TrafikLevhasiApp:
             command = self.select_image,
             font = ctk.CTkFont(size=16),
             width = 150,
-            height = 40
+            height = 40,
+            hover = False,
+            cursor = "@cat.cur",
+            fg_color="#e94560",         # Butonun normal rengi (Canlı kırmızı/pembe)
+            text_color="#ffffff",       # Yazı rengi (Beyaz)
+            #hover_color="#0f3460",      # Eğer hover'ı tekrar açarsan üzerine gelince olacak renk
+            corner_radius=20,           # Daha yuvarlak, yumuşak köşeler
+            border_width=2,             # Kenarlık kalınlığı
+            border_color="#0f3460"      # Kenarlık rengi
         )
         self.selected_btn.pack(side="left", padx=10)
+        self.selected_btn.configure(cursor="@cat.cur")
 
         #tespit etme butonu
         self.detect_btn = ctk.CTkButton(
@@ -87,9 +90,12 @@ class TrafikLevhasiApp:
             font=ctk.CTkFont(size=16),
             width=150,
             height=40,
+            hover = False,
+            cursor = "@cat2.cur",
             state="disabled"  # Başlangıçta pasif
         )
         self.detect_btn.pack(side="left", padx=10)
+        self.detect_btn.configure(cursor="@cat2.cur")
 
         # Sonuç listesi
         result_frame = ctk.CTkFrame(self.root)
@@ -122,7 +128,7 @@ class TrafikLevhasiApp:
             self.original_label.image = photo  # Referansı sakla
             
             # Tespit et butonunu aktif et
-            self.detect_btn.configure(state="normal")
+            self.detect_btn.configure(state="normal", cursor="@cat2.cur")
             
             # Sonuç alanını temizle
             self.result_text.delete("1.0", "end")
@@ -137,7 +143,7 @@ class TrafikLevhasiApp:
             return
         
         # YOLO ile tespit yap
-        results = self.model(self.image_path)
+        results = self.model(self.image_path, conf = 0.15)
         
         # Sonuçları işle
         detected_classes = []
