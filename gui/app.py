@@ -12,10 +12,10 @@ class TrafikLevhasiApp:
         self.root.title("Trafik Levhası Tespiti")
         self.root.geometry("1000x700")
 
-        self.root.configure(fg_color="#0f172a")  # Arka plan rengini ayarlayın
+        self.root.configure(fg_color="#d38c9d")  # Arka plan rengini ayarlayın
 
         #imleç ekliyorum hadi bakalım, başına @ gelmek zorundaymış
-        self.root.configure(cursor="@flower.cur")
+        self.root.configure(cursor="@pink.cur")
 
         #modeli yükle
         self.model = YOLO("../model/best.pt")
@@ -27,19 +27,59 @@ class TrafikLevhasiApp:
 
     def create_ui(self):
         #başlık
-        title = ctk.CTkLabel(
-            self.root,
-            text = "YOLO Trafik Levhası Tespit Sistemi",
-            font = ctk.CTkFont(size=24, weight="bold")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        left_path = os.path.join(current_dir, "Turkey.jpg")
+        right_path = os.path.join(current_dir, "hehe.png")  # Sağ logo için yol
+        
+        # PIL ve CustomTkinter ile görseli hazırla
+        pil_img = Image.open(left_path)
+        left_img = ctk.CTkImage(
+            light_image=pil_img,
+            dark_image=pil_img,
+            size=(70, 45)
         )
-        title.pack(pady=20)
+
+        pil_img_right = Image.open(right_path)
+        right_img = ctk.CTkImage(
+            light_image=pil_img_right,
+            dark_image=pil_img_right,
+            size=(65, 70)
+        )
+
+        # 2. Başlığı ve logoları tutacak ana şeffaf çerçeve
+        title_frame = ctk.CTkFrame(self.root, fg_color="transparent")
+        title_frame.pack(pady=20)
+
+        # 3. SOL TARAFTAKI LOGO
+        left_logo_label = ctk.CTkLabel(
+            title_frame,
+            image=left_img,  
+            text=""
+        )
+        left_logo_label.pack(side="left", padx=10)
+
+        # 4. ORTADAKİ BAŞLIK YAZISI
+        title_text = ctk.CTkLabel(
+            title_frame,
+            text=" YOLO Trafik Levhası Tespit Sistemi ",
+            font=ctk.CTkFont(family="Comic Sans MS", size=32, weight="bold")
+        )
+        title_text.pack(side="left")
+
+        # 5. SAĞ TARAFTAKİ LOGO (İstersen sağ için farklı bir `logo_img_right` de tanımlayabilirsin)
+        right_logo_label = ctk.CTkLabel(
+            title_frame,
+            image=right_img,  
+            text=""
+        )
+        right_logo_label.pack(side="left", padx=10)
 
         #ana çerçeve iki sütunlu
-        main_frame = ctk.CTkFrame(self.root)
+        main_frame = ctk.CTkFrame(self.root, fg_color="#f7dae7", border_width=0)
         main_frame.pack(pady=20, padx=10, fill="both", expand=True)
 
         #sık sütunda orijinal görsel
-        left_frame = ctk.CTkFrame(main_frame)
+        left_frame = ctk.CTkFrame(main_frame, fg_color="#e2b4c1", border_width=2, border_color="#d38c9d")
         left_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
         self.original_label = ctk.CTkLabel(
@@ -50,7 +90,7 @@ class TrafikLevhasiApp:
         self.original_label.pack(pady=10)
 
         #sağ sütunda sonuç görseli
-        right_frame = ctk.CTkFrame(main_frame)
+        right_frame = ctk.CTkFrame(main_frame, fg_color="#e2b4c1", border_width=2, border_color="#d38c9d")
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         self.result_label = ctk.CTkLabel(
@@ -61,7 +101,7 @@ class TrafikLevhasiApp:
         self.result_label.pack(pady=10)
 
         #butonlar
-        button_frame = ctk.CTkFrame(self.root)
+        button_frame = ctk.CTkFrame(self.root, fg_color="#d38c9d", border_width=0)
         button_frame.pack(pady=20)
 
         #görsel seçme butonu
@@ -70,19 +110,19 @@ class TrafikLevhasiApp:
             text = "Görsel Seç",
             command = self.select_image,
             font = ctk.CTkFont(size=16),
-            width = 150,
-            height = 40,
+            width = 200,
+            height = 50,
             hover = False,
-            cursor = "@cat.cur",
-            fg_color="#4d8a5a",         # Butonun normal rengi (Canlı kırmızı/pembe)
-            text_color="#ffffff",       # Yazı rengi (Beyaz)
+            cursor = "@cat3.cur",
+            fg_color="#e2b4c1",         # Butonun rengi
+            text_color="#a55166",       # Yazı rengi (Beyaz)
             #hover_color="#0f3460",      # Eğer hover'ı tekrar açarsan üzerine gelince olacak renk
             corner_radius=10,           # Daha yuvarlak, yumuşak köşeler
             border_width=3,             # Kenarlık kalınlığı
-            border_color="#0f3460"      # Kenarlık rengi
+            border_color="#a55166"      # Kenarlık rengi
         )
-        self.selected_btn.pack(side="left", padx=10)
-        self.selected_btn.configure(cursor="@cat.cur")
+        self.selected_btn.pack(side="left", padx=30)
+        self.selected_btn.configure(cursor="@cat3.cur")
 
         #tespit etme butonu
         self.detect_btn = ctk.CTkButton(
@@ -90,23 +130,31 @@ class TrafikLevhasiApp:
             text="Tespit Et",
             command=self.detect_objects,
             font=ctk.CTkFont(size=16),
-            width=150,
-            height=40,
+            width=200,
+            height=50,
             hover = False,
             cursor = "@cat2.cur",
+            fg_color="#e2b4c1",         # Butonun rengi
+            text_color="#a55166",       # Yazı rengi (Beyaz)
+            #hover_color="#0f3460",      # Eğer hover'ı tekrar açarsan üzerine gelince olacak renk
+            corner_radius=10,           # Daha yuvarlak, yumuşak köşeler
+            border_width=3,             # Kenarlık kalınlığı
+            border_color="#a55166",      # Kenarlık rengi
             state="disabled"  # Başlangıçta pasif
         )
-        self.detect_btn.pack(side="left", padx=10)
+        self.detect_btn.pack(side="left", padx=30)
         self.detect_btn.configure(cursor="@cat2.cur")
 
         # Sonuç listesi
-        result_frame = ctk.CTkFrame(self.root)
+        result_frame = ctk.CTkFrame(self.root, fg_color="#e2b4c1", border_width=2, border_color="#a55166")
         result_frame.pack(padx=20, pady=10, fill="x")
         
         self.result_text = ctk.CTkTextbox(
             result_frame,
             height=100,
-            font=ctk.CTkFont(size=14)
+            font=ctk.CTkFont(size=14),
+            fg_color="#f7dae7",
+            text_color="#a55166",
         )
         self.result_text.pack(pady=10, padx=10, fill="x")
         self.result_text.insert("1.0", "Tespit edilen trafik levhaları burada görünecek...")
